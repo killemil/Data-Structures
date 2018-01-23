@@ -8,41 +8,22 @@ public class Tree<T>
 
     public Tree(T value, params Tree<T>[] children)
     {
-        this.Value = value;
-        this.Children = children;
-    }
+        this.value = value;
+        this.children = new List<Tree<T>>();
 
-    public T Value
-    {
-        get
+        foreach (var child in children)
         {
-            return this.value;
-        }
-        set
-        {
-            this.value = value;
-        }
-    }
-
-    public IList<Tree<T>> Children
-    {
-        get
-        {
-            return this.children;
-        }
-        set
-        {
-            this.children = value;
+            this.children.Add(child);
         }
     }
 
     public void Print(int indent = 0)
     {
-        Console.WriteLine(new string(' ', indent) + this.value);
-
+        Console.Write(new string(' ', 2 * indent));
+        Console.WriteLine(this.value);
         foreach (var child in this.children)
         {
-            child.Print(indent + 2);
+            child.Print(indent + 1);
         }
     }
 
@@ -58,19 +39,29 @@ public class Tree<T>
 
     public IEnumerable<T> OrderDFS()
     {
-        var result = new List<T>();
-
-        this.DFS(this, result);
+        IList<T> result = new List<T>();
+        this.OrderDFS(this, result);
 
         return result;
+    }
+
+    private void OrderDFS(Tree<T> tree, IList<T> result)
+    {
+        foreach (var child in tree.children)
+        {
+            this.OrderDFS(child, result);
+        }
+
+        result.Add(tree.value);
     }
 
     public IEnumerable<T> OrderBFS()
     {
         var result = new List<T>();
-
         var queue = new Queue<Tree<T>>();
+
         queue.Enqueue(this);
+
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
@@ -82,15 +73,5 @@ public class Tree<T>
         }
 
         return result;
-    }
-
-    private void DFS(Tree<T> tree, List<T> result)
-    {
-        foreach (var child in tree.children)
-        {
-            this.DFS(child, result);
-        }
-
-        result.Add(tree.value);
     }
 }
